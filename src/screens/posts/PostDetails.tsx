@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   CommentType,
   deletePost,
@@ -37,21 +37,25 @@ export const PostDetails = ({
 
   return (
     <Screen>
-      <View>
-        <Text>{post?.title}</Text>
-        <Text>{post?.body}</Text>
+      <View style={styles.postDetails}>
+        <View>
+          <Text style={styles.postTitle}>{post?.title}</Text>
+          <Text style={styles.postBody}>{post?.body}</Text>
+        </View>
+        <View style={styles.userInfo}>
+          <Text>{user?.name}</Text>
+          <Text>{user?.email}</Text>
+          <Text>{user?.phone}</Text>
+        </View>
+        <TouchableOpacity onPress={() => removePost()}>
+          <Icon name="trash" color="black" size={30} />
+        </TouchableOpacity>
       </View>
-      <View>
-        <Text>{user?.name}</Text>
-        <Text>{user?.email}</Text>
-        <Text>{user?.phone}</Text>
-      </View>
-      <TouchableOpacity onPress={() => removePost()}>
-        <Icon name="trash" color="black" size={30} />
-      </TouchableOpacity>
       <FlatList
         data={comments}
-        renderItem={({item}: {item: CommentType}) => <Comment comment={item} />}
+        renderItem={({item}: {item: CommentType}) => (
+          <Comment comment={item} user={user} />
+        )}
         onEndReachedThreshold={0.5}
         onRefresh={() => dispatch(fetchPostComments(1))}
         onEndReached={() => dispatch(fetchPostComments(1))}
@@ -61,3 +65,21 @@ export const PostDetails = ({
     </Screen>
   );
 };
+
+const styles = StyleSheet.create({
+  postDetails: {
+    padding: 20,
+  },
+  userInfo: {
+    marginVertical: 15,
+  },
+  postTitle: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    textAlign: 'justify',
+    marginBottom: 10,
+  },
+  postBody: {
+    textAlign: 'justify',
+  },
+});
