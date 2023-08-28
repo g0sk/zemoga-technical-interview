@@ -7,7 +7,7 @@ import {useAppDispatch} from '../../store';
 import {addFavourite, removeFavourite} from '../../store/postSlice';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-export function PostListItem({
+export function Post({
   post,
   index,
   navigation,
@@ -35,7 +35,9 @@ export function PostListItem({
           <Text style={styles.postBody}>{post.body}</Text>
         </View>
       </View>
-      <TouchableOpacity onPress={() => setFavourite()}>
+      <TouchableOpacity
+        onPress={() => setFavourite()}
+        style={styles.favouriteButton}>
         <Icon
           name={!post.favourite ? 'star-outline' : 'star'}
           color="#c9b532"
@@ -53,21 +55,26 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1,
     borderRadius: 8,
-    marginBottom: 20,
     backgroundColor: 'white',
+    height: 240,
+    overflow: 'visible',
+    marginBottom: 20,
+    marginHorizontal: 40,
+    padding: 10,
   },
   postTitleContainer: {
     height: 'auto',
-    padding: 10,
   },
   postTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'justify',
   },
-  postBodyContainer: {
-    padding: 10,
-  },
+  postBodyContainer: {},
   postBody: {
-    padding: 20,
+    textAlign: 'justify',
+  },
+  favouriteButton: {
+    marginTop: 15,
   },
 });

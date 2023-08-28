@@ -81,8 +81,8 @@ export const postSlice = createSlice({
           ...p,
           favourite: false,
         }));
-        state.posts.push(...posts);
-        state.allPosts.push(...posts);
+        state.posts = posts;
+        state.allPosts = posts;
         state.currentPage = 1;
         state.loading = false;
         state.error = null;

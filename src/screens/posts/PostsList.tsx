@@ -11,7 +11,7 @@ import {
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useSelector} from 'react-redux';
 import {Screen} from '../../components/Screen';
-import {PostListItem} from './PostListItem';
+import {Post} from './Post';
 import {type RootNavigator} from '../../navigation/RootNavigator';
 import {RootState, useAppDispatch} from '../../store';
 import {fetchAllPosts, fetchPosts} from '../../store/postAsyncThunk';
@@ -50,33 +50,38 @@ export const PostsList = ({
 
   return (
     <Screen>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>{`Posts (${allPosts.length})`}</Text>
-        <TouchableOpacity onPress={() => dispatch(removeAllPosts())}>
-          <Icon name="trash-bin" color="black" size={30} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => dispatch(fetchAllPosts())}>
-          <Icon name="albums" color="black" size={30} />
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        ref={flatListRef}
-        data={allPosts}
-        renderItem={({item, index}) => (
-          <PostListItem post={item} index={index} navigation={navigation} />
-        )}
-        scrollEventThrottle={0}
-        onEndReachedThreshold={2}
-        initialNumToRender={ITEM_COUNT}
-        /* onEndReached={() =>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerText}>{`Posts (${allPosts.length})`}</Text>
+          <View style={styles.actionButtons}>
+            <TouchableOpacity onPress={() => dispatch(fetchAllPosts())}>
+              <Icon name="albums" color="black" size={30} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => dispatch(removeAllPosts())}>
+              <Icon name="trash-bin" color="black" size={30} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <FlatList
+          ref={flatListRef}
+          data={allPosts}
+          renderItem={({item, index}) => (
+            <Post post={item} index={index} navigation={navigation} />
+          )}
+          contentContainerStyle={styles.list}
+          scrollEventThrottle={0}
+          onEndReachedThreshold={2}
+          initialNumToRender={ITEM_COUNT}
+          /* onEndReached={() =>
           dispatch(fetchPosts({currentPage, limit: ITEM_COUNT}))
         } */
-        refreshing={loading}
-        onRefresh={() => onRefresh()}
-        //onScroll={handleScroll}
-        //onMomentumScrollEnd={handleSnap}
-        keyExtractor={item => item.id}
-      />
+          refreshing={loading}
+          onRefresh={() => onRefresh()}
+          //onScroll={handleScroll}
+          //onMomentumScrollEnd={handleSnap}
+          keyExtractor={item => item.id}
+        />
+      </View>
     </Screen>
   );
 };
@@ -85,18 +90,27 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'white',
   },
-  header: {
-    //position: 'absolute',
-    //alignContent: 'center',
-    //left: 0,
-    //right: 0,
-    width: '100%',
-    //zIndex: 1,
+  list: {
     backgroundColor: 'white',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    marginTop: 10,
   },
   headerText: {
     fontSize: 35,
     fontWeight: 'bold',
     color: 'black',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    minWidth: 70,
+    justifyContent: 'space-between',
   },
 });
