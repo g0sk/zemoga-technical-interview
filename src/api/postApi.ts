@@ -8,8 +8,8 @@ const getAllPosts = (): Promise<AxiosResponse<Post[], any>> => {
 };
 
 const getPosts = ({
-  limit,
   currentPage,
+  limit,
 }: Pagination): Promise<AxiosResponse<Post[], any>> =>
   axiosInstance.get(`/posts?_page=${currentPage}&_limit=${limit}`);
 

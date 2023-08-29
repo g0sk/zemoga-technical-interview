@@ -1,6 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import PostApi from '../api/postApi';
 import {clearPosts} from './postSlice';
+import {AxiosError} from 'axios';
 
 export type Post = {
   id: number;
@@ -52,12 +53,16 @@ export const fetchAllPosts = createAsyncThunk<
   FetchPostsResponse,
   void,
   {rejectValue: string}
->('post/fetchAllPosts', async () => {
+>('post/fetchAllPosts', async (_, {rejectWithValue}) => {
   try {
     const res = await PostApi.getAllPosts();
     return res.data;
-  } catch (e) {
-    throw e;
+  } catch (e: unknown) {
+    if (e instanceof AxiosError) {
+      return rejectWithValue(`${e.code}: ${e.message}`);
+    } else {
+      throw e;
+    }
   }
 });
 
@@ -65,12 +70,16 @@ export const fetchPosts = createAsyncThunk<
   FetchPostsResponse,
   Pagination,
   {rejectValue: string}
->('post/fetchPosts', async ({currentPage, limit}) => {
+>('post/fetchPosts', async ({currentPage, limit}, {rejectWithValue}) => {
   try {
     const res = await PostApi.getPosts({currentPage, limit});
     return res.data;
   } catch (e) {
-    throw e;
+    if (e instanceof AxiosError) {
+      return rejectWithValue(`${e.code}: ${e.message}`);
+    } else {
+      throw e;
+    }
   }
 });
 
@@ -83,29 +92,55 @@ export const fetchPostDetails = createAsyncThunk<void, number, {}>(
   },
 );
 
-export const fetchPost = createAsyncThunk<Post, number, {}>(
+export const fetchPost = createAsyncThunk<Post, number, {rejectValue: string}>(
   'post/fetchPost',
-  async (postId, thunkAPI) => {
-    const res = await PostApi.getPost(postId);
-    return res.data;
+  async (postId, {rejectWithValue}) => {
+    try {
+      const res = await PostApi.getPost(postId);
+      return res.data;
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        return rejectWithValue(`${e.code}: ${e.message}`);
+      } else {
+        throw e;
+      }
+    }
   },
 );
 
-export const fetchPostComments = createAsyncThunk<CommentType[], number, {}>(
-  'post/fetchPostComments',
-  async (postId, thunkAPI) => {
+export const fetchPostComments = createAsyncThunk<
+  CommentType[],
+  number,
+  {rejectValue: string}
+>('post/fetchPostComments', async (postId, {rejectWithValue}) => {
+  try {
     const res = await PostApi.getPostComments(postId);
     return res.data;
-  },
-);
+  } catch (e: unknown) {
+    if (e instanceof AxiosError) {
+      return rejectWithValue(`${e.code}: ${e.message}`);
+    } else {
+      throw e;
+    }
+  }
+});
 
-export const fetchPostUser = createAsyncThunk<User, number, {}>(
-  'post/fetchPostUser',
-  async (userId, thunkAPI) => {
+export const fetchPostUser = createAsyncThunk<
+  User,
+  number,
+  {rejectValue: string}
+>('post/fetchPostUser', async (userId, {rejectWithValue}) => {
+  try {
     const res = await PostApi.getPostUser(userId);
     return res.data;
-  },
-);
+  } catch (e: unknown) {
+    if (e instanceof AxiosError) {
+      return rejectWithValue(`${e.code}: ${e.message}`);
+    } else {
+      throw e;
+    }
+  }
+});
 
 export const deletePost = createAsyncThunk<void, number, {}>(
   'post/deletePost',
@@ -114,8 +149,12 @@ export const deletePost = createAsyncThunk<void, number, {}>(
       await PostApi.deletePost(postId);
       thunkAPI.dispatch(clearPosts());
       thunkAPI.dispatch(fetchPosts({currentPage: 1, limit: 10}));
-    } catch (e) {
-      thunkAPI.rejectWithValue(e);
+    } catch (e: unknown) {
+      if (e instanceof AxiosError) {
+        return thunkAPI.rejectWithValue(`${e.code}: ${e.message}`);
+      } else {
+        throw e;
+      }
     }
   },
 );

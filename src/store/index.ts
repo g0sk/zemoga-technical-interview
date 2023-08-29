@@ -7,7 +7,7 @@ export const store = configureStore({
     post: postReducer,
   },
   middleware: getDefaultMiddleware => {
-    if (__DEV__) {
+    if (__DEV__ && !process.env.JEST_WORKER_ID) {
       const createDebugger = require('redux-flipper').default;
 
       return getDefaultMiddleware().concat(createDebugger());
